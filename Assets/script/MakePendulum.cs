@@ -37,33 +37,51 @@ public class MakePendulum : MonoBehaviour
         }
     }
 
-    public void MakingPendulum()
+    public void MakingPendulum(Vector3? anchorPoint = null)
     {
         if (_fulcrumOrPendulum == FulcrumOrPendulum.fulcrum)
         {
             obj = new("Fulcrum", typeof(Rigidbody), typeof(HingeJoint));
-            obj.GetComponent<HingeJoint>().connectedBody = GetComponent<Rigidbody>();
+            var hingeJoint = obj.GetComponent<HingeJoint>();
+            hingeJoint.connectedBody = GetComponent<Rigidbody>();
             obj.transform.position = transform.position;
-            obj.GetComponent<HingeJoint>().anchor = Vector3.zero;
-            obj.GetComponent<HingeJoint>().axis = new Vector3(1, 0, 0);
-            obj.GetComponent<HingeJoint>().spring = _useSpring;
+            hingeJoint.anchor = Vector3.zero;
+            hingeJoint.axis = new Vector3(1, 0, 0);
+            hingeJoint.spring = _useSpring;
 
             obj2 = new("Weight", typeof(Rigidbody), typeof( HingeJoint), typeof(MeshRenderer),typeof(MeshCollider),typeof(LineRenderer),typeof(Weight));
             obj2.transform.position = new Vector3(transform.position.x, transform.position.y - _ropeLength, transform.position.z);
-            obj2.GetComponent<HingeJoint>().connectedBody = obj.GetComponent<Rigidbody>();
-            obj2.GetComponent<HingeJoint>().anchor = new Vector3(0,_ropeLength,0);
-            obj2.GetComponent<HingeJoint>().axis = new Vector3(0, 0, 1);
-            obj2.GetComponent<HingeJoint>().spring = _useSpring;
+            var hingeJoint2 = obj2.GetComponent<HingeJoint>();
+            hingeJoint2.connectedBody = obj.GetComponent<Rigidbody>();
+            hingeJoint2.anchor = new Vector3(0,_ropeLength,0);
+            hingeJoint2.axis = new Vector3(0, 0, 1);
+            hingeJoint2.spring = _useSpring;
             if(_ropeMaterial != null)
             {
                 obj2.GetComponent<LineRenderer>().material = _ropeMaterial;
             }
-            obj2.GetComponent<Weight>().LineRenderer = obj2.GetComponent<LineRenderer>();
-            obj2.GetComponent<Weight>().Fulcrum = obj;
+            var weight = obj2.GetComponent<Weight>();
+            weight.LineRenderer = obj2.GetComponent<LineRenderer>();
+            weight.Fulcrum = obj;
         }
         else
         {
+            obj2 = new("Anchor", typeof(Rigidbody));
+            var rig = obj2.GetComponent<Rigidbody>();
+            rig.useGravity = false;
+            rig.isKinematic = true;
+            obj = new GameObject("Fulcrum", typeof(Rigidbody), typeof(HingeJoint));
+            obj.transform.position = (Vector3)anchorPoint;
+            var hingeJoint = obj.GetComponent<HingeJoint>();
+            hingeJoint.anchor = Vector3.zero;
+            hingeJoint.axis = new Vector3(1, 0,0);
+            hingeJoint.spring = _useSpring;
 
+            var weight = GetComponent<HingeJoint>();
+            weight.connectedBody = obj.GetComponent<Rigidbody>();
+            weight.anchor = (Vector3)anchorPoint - transform.position;
+            weight.axis = new Vector3(0, 0, 1);
+            weight.spring = _useSpring;
         }
     }
 
