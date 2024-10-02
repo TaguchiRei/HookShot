@@ -69,7 +69,7 @@ public class PlayerMove : MonoBehaviour
         if(_onGround)
         {
             _rig.AddForce(_movePower * _moveSpeed, ForceMode.Impulse);
-            _rig.velocity = (_moveSpeed / Mathf.Abs(_rig.velocity.x) + Mathf.Abs(_rig.velocity.y) + Mathf.Abs(_rig.velocity.z)) * _rig.velocity;
+            var A = _rig.velocity / (_moveSpeed / Mathf.Abs(_rig.velocity.x) + Mathf.Abs(_rig.velocity.y) + Mathf.Abs(_rig.velocity.z));
             if (Mathf.Abs(_rig.velocity.x) + Mathf.Abs(_rig.velocity.y) + Mathf.Abs(_rig.velocity.z) < 10)
             {
                 _rig.velocity = new Vector3();

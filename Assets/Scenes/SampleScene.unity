@@ -756,6 +756,7 @@ MonoBehaviour:
   _moveSpeed: 1
   _jumpPower: 1
   _hookEjectionForce: 1
+  shotInterval: 0.1
   _bullet: {fileID: 2054695368371337792, guid: 9b03e1c3dd6b9ac4bae7e57aa5ec02d1, type: 3}
   _fpsHand: {fileID: 2956668557640581101}
   _makePendulum: {fileID: 998862559}
@@ -2401,7 +2402,7 @@ Transform:
   m_GameObject: {fileID: 4698425192307798533}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3845,7 +3846,7 @@ Transform:
   m_GameObject: {fileID: 2298999307580991820}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
