@@ -3,19 +3,19 @@ using UnityEngine;
 
 public class MakePendulum : MonoBehaviour
 {
-    [Tooltip ("プレビュー表示をするかどうか")]
+    [Tooltip("プレビュー表示をするかどうか")]
     [SerializeField] bool _showGizmo = true;
-    [Tooltip ("開始時に生成したい場合はチェック。つけない場合はMakingPendulum()を呼び出す。")]
+    [Tooltip("開始時に生成したい場合はチェック。つけない場合はMakingPendulum()を呼び出す。")]
     [SerializeField] bool _makePendulumForStart = true;
-    [Tooltip ("支点からおもりまでの距離")]
+    [Tooltip("支点からおもりまでの距離")]
     [SerializeField] float _ropeLength = 2;
-    [Tooltip ("プログラムがアタッチされたオブジェクトが支点と重りのどちらか")]
+    [Tooltip("プログラムがアタッチされたオブジェクトが支点と重りのどちらか")]
     [SerializeField] FulcrumOrPendulum _fulcrumOrPendulum = FulcrumOrPendulum.fulcrum;
-    [Tooltip ("生成した振り子のSpringの値を変更できる。")]
+    [Tooltip("生成した振り子のSpringの値を変更できる。")]
     [SerializeField] ObjectSpring _spring = new();
-    [Tooltip ("ロープのマテリアルを設定")]
+    [Tooltip("ロープのマテリアルを設定")]
     [SerializeField] Material _ropeMaterial;
-    [Tooltip ("重りとなるオブジェクトの設定。")]
+    [Tooltip("重りとなるオブジェクトの設定。")]
     [SerializeField] ObjectSetting _weightObjectSetting = new();
 
     GameObject obj;
@@ -27,7 +27,7 @@ public class MakePendulum : MonoBehaviour
         _useSpring.spring = _spring._spring;
         _useSpring.damper = _spring._damper;
         _useSpring.targetPosition = _spring._TargetPosition;
-        if(_weightObjectSetting.WeightObject == null)
+        if (_weightObjectSetting.WeightObject == null)
         {
             //_weightObjectSetting.WeightObject = new("Weight", typeof(Rigidbody), typeof(HingeJoint), typeof(MeshRenderer), typeof(MeshCollider));
         }
@@ -49,14 +49,14 @@ public class MakePendulum : MonoBehaviour
             hingeJoint.axis = new Vector3(1, 0, 0);
             hingeJoint.spring = _useSpring;
 
-            obj2 = new("Weight", typeof(Rigidbody), typeof( HingeJoint), typeof(MeshRenderer),typeof(MeshCollider),typeof(LineRenderer),typeof(Weight));
+            obj2 = new("Weight", typeof(Rigidbody), typeof(HingeJoint), typeof(MeshRenderer), typeof(MeshCollider), typeof(LineRenderer), typeof(Weight));
             obj2.transform.position = new Vector3(transform.position.x, transform.position.y - _ropeLength, transform.position.z);
             var hingeJoint2 = obj2.GetComponent<HingeJoint>();
             hingeJoint2.connectedBody = obj.GetComponent<Rigidbody>();
-            hingeJoint2.anchor = new Vector3(0,_ropeLength,0);
+            hingeJoint2.anchor = new Vector3(0, _ropeLength, 0);
             hingeJoint2.axis = new Vector3(0, 0, 1);
             hingeJoint2.spring = _useSpring;
-            if(_ropeMaterial != null)
+            if (_ropeMaterial != null)
             {
                 obj2.GetComponent<LineRenderer>().material = _ropeMaterial;
             }
@@ -74,7 +74,7 @@ public class MakePendulum : MonoBehaviour
             obj.transform.position = (Vector3)anchorPoint;
             var hingeJoint = obj.GetComponent<HingeJoint>();
             hingeJoint.anchor = Vector3.zero;
-            hingeJoint.axis = new Vector3(1, 0,0);
+            hingeJoint.axis = new Vector3(1, 0, 0);
             hingeJoint.spring = _useSpring;
 
             var weight = GetComponent<HingeJoint>();
@@ -91,7 +91,7 @@ public class MakePendulum : MonoBehaviour
         Vector3 end = start + Vector3.down * _ropeLength;
         if (_showGizmo)
         {
-            if(obj2 != null)
+            if (obj2 != null)
             {
                 end = obj2.transform.position;
             }
@@ -118,11 +118,11 @@ public class MakePendulum : MonoBehaviour
 [Serializable]
 public struct ObjectSetting
 {
-    [Tooltip ("当たり判定をつけるかどうか")]
+    [Tooltip("当たり判定をつけるかどうか")]
     public bool _useCollider;
-    [Tooltip ("当たり判定をIsTriggerにするかどうか")]
+    [Tooltip("当たり判定をIsTriggerにするかどうか")]
     public bool _useIsTrigger;
-    [Tooltip ("重りとなるオブジェクトを入れられる。入れなくても動く")]
+    [Tooltip("重りとなるオブジェクトを入れられる。入れなくても動く")]
     public GameObject WeightObject;
 }
 [Serializable]

@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -6,49 +6,78 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _moveSpeed = 1f;
     [SerializeField] float _jumpPower = 1f;
     [SerializeField] float _hookEjectionForce = 1f;
-    [SerializeField] float shotInterval = 0.1f;
-    float shotIntervalTime = 0;
+    [SerializeField] float _shotInterval = 0.1f;
+    [SerializeField] float _magazineCapacity = 15;
+
+    float _shotIntervalTime = 0;
 
     [SerializeField] GameObject _bullet;
 
     [SerializeField] GameObject _fpsHand;
-    [SerializeField] MakePendulum _makePendulum;
+    [SerializeField] Animator _animator;
     [SerializeField] Rigidbody _rig;
 
     Vector3 _movePower = Vector3.zero;
+    Dictionary<Anim, string> _anim = new();
     bool _onGround = true;
     bool _gunMode = true;
+    int _remainingBullets = 15;
 
     private void Start()
     {
         _onGround = true;
+        _anim.Clear();
+        _anim.Add(Anim.run, "run");
+        _anim.Add(Anim.reload, "reload");
+        _anim.Add(Anim.railgun, "railgun");
+        _anim.Add(Anim.aim, "aim");
+        _anim.Add(Anim.shootRailgun, "shootRailgun");
     }
 
     private void Update()
     {
-        _movePower = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        
+        var hor = Input.GetAxisRaw("Horizontal");
+        var ver = Input.GetAxisRaw("Vertical");
+        transform.Rotate(0, Input.GetAxisRaw("Mouse X"), 0);
+        if (hor != 0 || ver != 0)
+        {
+            _movePower = new Vector3(ver, 0, hor * -1);
+            _animator.SetBool(_anim[Anim.run], true);
+        }
+        else
+        {
+            _animator.SetBool(_anim[Anim.run], false);
+        }
+
         if (_onGround && Input.GetButtonDown("Jump"))
         {
             _movePower += new Vector3(0, _jumpPower, 0);
             _onGround = false;
         }
         //射撃
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButton("Fire1") && _remainingBullets != 0)
         {
-            if(_gunMode && shotIntervalTime <= 0)
+            if (_gunMode && _shotIntervalTime <= 0)
             {
                 Instantiate(_bullet);
-                shotIntervalTime = shotInterval;
+                _shotIntervalTime = _shotInterval;
             }
             else
             {
 
             }
         }
-        if(shotIntervalTime > 0)
+        if(_remainingBullets == 0)
         {
-            shotIntervalTime -= Time.deltaTime;
+            if(Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.R))
+            {
+                _animator.SetBool(_anim[Anim.reload], true);
+            }
+        }
+        
+        if (_shotIntervalTime > 0)
+        {
+            _shotIntervalTime -= Time.deltaTime;
         }
         //フックショット射撃
         if (Input.GetButtonDown("Fire2"))
@@ -61,23 +90,33 @@ public class PlayerMove : MonoBehaviour
         {
             _onGround = true;
         }
-        
+
+    }
+
+    public void Reload()
+    {
+        _remainingBullets = 15;
+        _animator.SetBool(_anim[Anim.reload], false);
     }
 
     private void FixedUpdate()
     {
-        if(_onGround)
+        if (_onGround)
         {
-            _rig.AddForce(_movePower * _moveSpeed, ForceMode.Impulse);
-            var A = _rig.velocity / (_moveSpeed / Mathf.Abs(_rig.velocity.x) + Mathf.Abs(_rig.velocity.y) + Mathf.Abs(_rig.velocity.z));
-            if (Mathf.Abs(_rig.velocity.x) + Mathf.Abs(_rig.velocity.y) + Mathf.Abs(_rig.velocity.z) < 10)
-            {
-                _rig.velocity = new Vector3();
-            }
+            _rig.velocity = transform.TransformDirection(_movePower) * _moveSpeed;
+            _movePower = Vector3.zero;
         }
         else
         {
             _rig.AddForce(_movePower * _moveSpeed / 2, ForceMode.Acceleration);
         }
+    }
+    enum Anim
+    {
+        run,
+        reload,
+        railgun,
+        aim,
+        shootRailgun,
     }
 }
