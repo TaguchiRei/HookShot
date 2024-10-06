@@ -20,8 +20,11 @@ public class PlayerMove : MonoBehaviour
     Vector3 _movePower = Vector3.zero;
     Dictionary<Anim, string> _anim = new();
     bool _onGround = true;
-    bool _gunMode = true;
     int _remainingBullets = 15;
+
+    [HideInInspector] public bool _gunMode = true;
+    [HideInInspector] public bool _canShootRailgun = false;
+
 
     private void Start()
     {
@@ -39,6 +42,8 @@ public class PlayerMove : MonoBehaviour
         var hor = Input.GetAxisRaw("Horizontal");
         var ver = Input.GetAxisRaw("Vertical");
         transform.Rotate(0, Input.GetAxisRaw("Mouse X"), 0);
+        var mouseY = Input.GetAxisRaw("Mouse Y");
+        _fpsHand.transform.Rotate(0, 0, mouseY * -1);
         if (hor != 0 || ver != 0)
         {
             _movePower = new Vector3(ver, 0, hor * -1);
@@ -55,34 +60,61 @@ public class PlayerMove : MonoBehaviour
             _onGround = false;
         }
         //射撃
-        if (Input.GetButton("Fire1") && _remainingBullets != 0)
+        if (Input.GetButton("Fire1"))
         {
-            if (_gunMode && _shotIntervalTime <= 0)
+            if (_gunMode)
             {
-                Instantiate(_bullet);
-                _shotIntervalTime = _shotInterval;
+                if (_shotIntervalTime <= 0 && _remainingBullets != 0)
+                {
+                    Instantiate(_bullet);
+                    _shotIntervalTime = _shotInterval;
+                    _remainingBullets--;
+                }
             }
             else
             {
-
+                if (_canShootRailgun)
+                {
+                    _animator.SetBool(_anim[Anim.shootRailgun], true);
+                }
             }
         }
-        if(_remainingBullets == 0)
+        if (_remainingBullets == 0)
         {
-            if(Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.R))
+            if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.R))
             {
                 _animator.SetBool(_anim[Anim.reload], true);
             }
         }
-        
+
         if (_shotIntervalTime > 0)
         {
             _shotIntervalTime -= Time.deltaTime;
         }
-        //フックショット射撃
+        //変形
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            _animator.SetBool(_anim[Anim.railgun], true);
+            _gunMode = false;
+
+        }
+        //フックショット射撃とレールガン構え
         if (Input.GetButtonDown("Fire2"))
         {
+            if (_gunMode)
+            {
 
+            }
+            else
+            {
+                _canShootRailgun = true;
+                _animator.SetBool(_anim[Anim.aim], true);
+            }
+        }
+        if (Input.GetButtonUp("Fire2"))
+        {
+            _animator.SetBool(_anim[Anim.aim], false);
+            _canShootRailgun = false;
         }
         //接地判定
         var line = Physics.Raycast(transform.position, Vector3.down, 1.5f);
