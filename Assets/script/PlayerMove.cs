@@ -35,6 +35,7 @@ public class PlayerMove : MonoBehaviour
         _anim.Add(Anim.railgun, "railgun");
         _anim.Add(Anim.aim, "aim");
         _anim.Add(Anim.shootRailgun, "shootRailgun");
+        _anim.Add(Anim.hookShot, "hookShot");
     }
 
     private void Update()
@@ -47,16 +48,23 @@ public class PlayerMove : MonoBehaviour
         if (hor != 0 || ver != 0)
         {
             _movePower = new Vector3(ver, 0, hor * -1);
-            _animator.SetBool(_anim[Anim.run], true);
+            if(_onGround)
+            {
+                _animator.SetBool(_anim[Anim.run], true);
+            }
+            else
+            {
+                _animator.SetBool(_anim[Anim.run], false);
+            }
         }
         else
         {
             _animator.SetBool(_anim[Anim.run], false);
         }
-
+        //ジャンプ
         if (_onGround && Input.GetButtonDown("Jump"))
         {
-            _movePower += new Vector3(0, _jumpPower, 0);
+            _rig.velocity += new Vector3(0, _jumpPower, 0);
             _onGround = false;
         }
         //射撃
@@ -103,7 +111,7 @@ public class PlayerMove : MonoBehaviour
         {
             if (_gunMode)
             {
-
+                _animator.SetBool(_anim[Anim.hookShot], true);
             }
             else
             {
@@ -118,7 +126,7 @@ public class PlayerMove : MonoBehaviour
         }
         //接地判定
         var line = Physics.Raycast(transform.position, Vector3.down, 1.5f);
-        if (line)
+        if (line && _rig.velocity.y <= 0)
         {
             _onGround = true;
         }
@@ -135,12 +143,27 @@ public class PlayerMove : MonoBehaviour
     {
         if (_onGround)
         {
-            _rig.velocity = transform.TransformDirection(_movePower) * _moveSpeed;
+            Vector3 pMove = transform.TransformDirection(_movePower) * _moveSpeed;
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                pMove *= 2f;
+            }
+            _rig.velocity = new Vector3 (pMove.x, _rig.velocity.y, pMove.z);
             _movePower = Vector3.zero;
         }
         else
         {
             _rig.AddForce(_movePower * _moveSpeed / 2, ForceMode.Acceleration);
+        }
+
+        //重力を作る
+        if(_rig.velocity.y < 1)
+        {
+            _rig.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
+        }
+        else
+        {
+            _rig.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
         }
     }
     enum Anim
@@ -150,5 +173,6 @@ public class PlayerMove : MonoBehaviour
         railgun,
         aim,
         shootRailgun,
+        hookShot,
     }
 }
