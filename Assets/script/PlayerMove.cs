@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,23 +13,33 @@ public class PlayerMove : MonoBehaviour
     float _shotIntervalTime = 0;
 
     [SerializeField] GameObject _bullet;
-
+    [SerializeField] GameObject _anchor;
+    [SerializeField] GameObject _anchorMuzzle;
     [SerializeField] GameObject _fpsHand;
     [SerializeField] Animator _animator;
     [SerializeField] Rigidbody _rig;
 
     Vector3 _movePower = Vector3.zero;
+    Vector3 _hitPos = Vector3.zero;
+    GameObject _anc;
     Dictionary<Anim, string> _anim = new();
     bool _onGround = true;
+    bool _usingAnc = false;
+    bool _hitAnc = false;
+    bool _boost = false;
     int _remainingBullets = 15;
+    float _anchorTimer = 0;
 
     [HideInInspector] public bool _gunMode = true;
     [HideInInspector] public bool _canShootRailgun = false;
+    [HideInInspector] public Vector3 _hookShotHitPos;
 
 
     private void Start()
     {
         _onGround = true;
+        _hitAnc = false;
+        _usingAnc = false;
         _anim.Clear();
         _anim.Add(Anim.run, "run");
         _anim.Add(Anim.reload, "reload");
@@ -74,7 +85,7 @@ public class PlayerMove : MonoBehaviour
             {
                 if (_shotIntervalTime <= 0 && _remainingBullets != 0)
                 {
-                    Instantiate(_bullet);
+                    _anc = Instantiate(_bullet);
                     _shotIntervalTime = _shotInterval;
                     _remainingBullets--;
                 }
@@ -111,7 +122,12 @@ public class PlayerMove : MonoBehaviour
         {
             if (_gunMode)
             {
-                _animator.SetBool(_anim[Anim.hookShot], true);
+                if (!_usingAnc)
+                {
+                    _animator.SetBool(_anim[Anim.hookShot], true);
+                    _anc = Instantiate(_anchor);
+                    _usingAnc = true;
+                }
             }
             else
             {
@@ -123,6 +139,21 @@ public class PlayerMove : MonoBehaviour
         {
             _animator.SetBool(_anim[Anim.aim], false);
             _canShootRailgun = false;
+            if (_usingAnc)
+            {
+                _usingAnc = false;
+                _hitAnc = false;
+                
+            }
+        }
+        //アンカーを外すためのタイマー
+        if(_anchorTimer > 0)
+        {
+            _anchorTimer -= Time.deltaTime;
+            if (_anchorTimer < 0)
+            {
+                NotHitAnchor();
+            }
         }
         //接地判定
         var line = Physics.Raycast(transform.position, Vector3.down, 1.5f);
@@ -133,10 +164,32 @@ public class PlayerMove : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// リロードが完了したときの処理
+    /// </summary>
     public void Reload()
     {
         _remainingBullets = 15;
         _animator.SetBool(_anim[Anim.reload], false);
+    }
+
+    /// <summary>
+    /// アンカーが当たった時の処理
+    /// </summary>
+    /// <param name="pos">アンカーが当たった場所</param>
+    public void HitAnchor(Vector3 pos)
+    {
+        _hitPos = pos;
+        _hitAnc = true;
+    }
+
+    /// <summary>
+    /// アンカーが当たらなかったとき、またはアンカーを外すときの処理
+    /// </summary>
+    public void NotHitAnchor()
+    {
+        _usingAnc = false;
+        _animator.SetBool(_anim[Anim.hookShot], false);
     }
 
     private void FixedUpdate()
@@ -148,7 +201,7 @@ public class PlayerMove : MonoBehaviour
             {
                 pMove *= 2f;
             }
-            _rig.velocity = new Vector3 (pMove.x, _rig.velocity.y, pMove.z);
+            _rig.velocity = new Vector3(pMove.x, _rig.velocity.y, pMove.z);
             _movePower = Vector3.zero;
         }
         else
@@ -165,7 +218,25 @@ public class PlayerMove : MonoBehaviour
         {
             _rig.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
         }
+        //フックショットの動きを作る
+        if (_usingAnc && _hitAnc)
+        {
+            Vector3 vec = _hitPos - transform.position;
+            vec.Normalize();
+            if (!_boost)
+            {
+                _boost = true;
+                _rig.velocity += vec * 10f;
+                _anchorTimer = 5;
+                _onGround = false;
+            }
+            _rig.AddForce(vec * 20f, ForceMode.Acceleration);
+        }
     }
+
+    /// <summary>
+    /// アニメーションを管理するための変数を自動入力でできるようにenumを使用
+    /// </summary>
     enum Anim
     {
         run,
