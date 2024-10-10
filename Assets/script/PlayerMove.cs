@@ -83,7 +83,7 @@ public class PlayerMove : MonoBehaviour
             {
                 if (_shotIntervalTime <= 0 && _remainingBullets != 0)
                 {
-                    _anc = Instantiate(_bullet);
+                    Instantiate(_bullet);
                     _shotIntervalTime = _shotInterval;
                     _remainingBullets--;
                 }
@@ -138,13 +138,13 @@ public class PlayerMove : MonoBehaviour
         {
             _animator.SetBool(_anim[Anim.aim], false);
             _canShootRailgun = false;
+            Destroy(_anc);
             if (_usingAnc)
             {
                 if (_hitAnc)
                 {
                     _rig.AddForce(0, 15, 0);
                 }
-                Destroy(_anc);
                 NotHitAnchor();
             }
         }
@@ -198,6 +198,7 @@ public class PlayerMove : MonoBehaviour
     {
         _usingAnc = false;
         _hitAnc = false;
+        _boost = false;
         _animator.SetBool(_anim[Anim.hookShot], false);
         _anchorTimer = 0;
         Destroy(_anc);
@@ -237,11 +238,17 @@ public class PlayerMove : MonoBehaviour
             if (!_boost)
             {
                 _boost = true;
-                _rig.velocity += vec * 10f;
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    _rig.velocity = vec * 10;
+                }
                 _anchorTimer = 5;
                 _onGround = false;
             }
-            _rig.AddForce(vec * 30f, ForceMode.Acceleration);
+            else
+            {
+                _rig.AddForce(vec * 50f, ForceMode.Acceleration);
+            }
         }
     }
 
