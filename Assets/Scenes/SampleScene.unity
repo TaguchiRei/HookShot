@@ -1608,14 +1608,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f77a6ace1f49bc448bbf7bc8fe65a630, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 25
+  _moveSpeed: 5
   _jumpPower: 7
   _hookEjectionForce: 1
   _shotInterval: 0.1
   _magazineCapacity: 15
   _bullet: {fileID: 2054695368371337792, guid: 9b03e1c3dd6b9ac4bae7e57aa5ec02d1, type: 3}
   _anchor: {fileID: 2416097529835804553, guid: 9c1e0ea8b70372c4a91fd793e1c404fc, type: 3}
-  _anchorMuzzle: {fileID: 1662974459}
   _fpsHand: {fileID: 2956668557640581101}
   _animator: {fileID: 5515554851178237885}
   _rig: {fileID: 998862557}
@@ -1664,7 +1663,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!65 &998862558
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ public class PlayerMove : MonoBehaviour
 
     [SerializeField] GameObject _bullet;
     [SerializeField] GameObject _anchor;
-    [SerializeField] GameObject _anchorMuzzle;
     [SerializeField] GameObject _fpsHand;
     [SerializeField] Animator _animator;
     [SerializeField] Rigidbody _rig;
@@ -59,7 +57,7 @@ public class PlayerMove : MonoBehaviour
         if (hor != 0 || ver != 0)
         {
             _movePower = new Vector3(ver, 0, hor * -1);
-            if(_onGround)
+            if (_onGround)
             {
                 _animator.SetBool(_anim[Anim.run], true);
             }
@@ -127,6 +125,7 @@ public class PlayerMove : MonoBehaviour
                     _animator.SetBool(_anim[Anim.hookShot], true);
                     _anc = Instantiate(_anchor);
                     _usingAnc = true;
+                    _anc.GetComponent<Rigidbody>().velocity = _rig.velocity / 4;
                 }
             }
             else
@@ -141,25 +140,34 @@ public class PlayerMove : MonoBehaviour
             _canShootRailgun = false;
             if (_usingAnc)
             {
-                _usingAnc = false;
-                _hitAnc = false;
-                
+                if (_hitAnc)
+                {
+                    _rig.AddForce(0, 15, 0);
+                }
+                Destroy(_anc);
+                NotHitAnchor();
             }
         }
         //アンカーを外すためのタイマー
-        if(_anchorTimer > 0)
+        if (_anchorTimer > 0)
         {
             _anchorTimer -= Time.deltaTime;
             if (_anchorTimer < 0)
             {
+                _rig.AddForce(0, 15, 0);
+                Destroy(_anc);
                 NotHitAnchor();
             }
         }
         //接地判定
         var line = Physics.Raycast(transform.position, Vector3.down, 1.5f);
-        if (line && _rig.velocity.y <= 0)
+        if (line && !_hitAnc)
         {
             _onGround = true;
+        }
+        else
+        {
+            _onGround = false;
         }
 
     }
@@ -189,7 +197,10 @@ public class PlayerMove : MonoBehaviour
     public void NotHitAnchor()
     {
         _usingAnc = false;
+        _hitAnc = false;
         _animator.SetBool(_anim[Anim.hookShot], false);
+        _anchorTimer = 0;
+        Destroy(_anc);
     }
 
     private void FixedUpdate()
@@ -206,13 +217,13 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            _rig.AddForce(_movePower * _moveSpeed / 2, ForceMode.Acceleration);
+            _rig.AddForce(transform.TransformDirection(_movePower) * _moveSpeed * 2, ForceMode.Acceleration);
         }
 
         //重力を作る
-        if(_rig.velocity.y < 1)
+        if (_rig.velocity.y < 1)
         {
-            _rig.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
+            _rig.AddForce(Vector3.down * 18f, ForceMode.Acceleration);
         }
         else
         {
@@ -230,7 +241,7 @@ public class PlayerMove : MonoBehaviour
                 _anchorTimer = 5;
                 _onGround = false;
             }
-            _rig.AddForce(vec * 20f, ForceMode.Acceleration);
+            _rig.AddForce(vec * 30f, ForceMode.Acceleration);
         }
     }
 
