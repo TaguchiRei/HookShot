@@ -27,6 +27,7 @@ public class PlayerMove : MonoBehaviour
     bool _boost = false;
     int _remainingBullets = 15;
     float _anchorTimer = 0;
+    float _cameraSpeed = 1;
 
     [HideInInspector] public bool _gunMode = true;
     [HideInInspector] public bool _canShootRailgun = false;
@@ -38,6 +39,7 @@ public class PlayerMove : MonoBehaviour
         _onGround = true;
         _hitAnc = false;
         _usingAnc = false;
+        _cameraSpeed = 1;
         _anim.Clear();
         _anim.Add(Anim.run, "run");
         _anim.Add(Anim.reload, "reload");
@@ -51,9 +53,9 @@ public class PlayerMove : MonoBehaviour
     {
         var hor = Input.GetAxisRaw("Horizontal");
         var ver = Input.GetAxisRaw("Vertical");
-        transform.Rotate(0, Input.GetAxisRaw("Mouse X"), 0);
+        transform.Rotate(0, Input.GetAxisRaw("Mouse X") * _cameraSpeed, 0);
         var mouseY = Input.GetAxisRaw("Mouse Y");
-        _fpsHand.transform.Rotate(0, 0, mouseY * -1);
+        _fpsHand.transform.Rotate(0, 0, mouseY * -1 * _cameraSpeed);
         if (hor != 0 || ver != 0)
         {
             _movePower = new Vector3(ver, 0, hor * -1);
@@ -71,9 +73,9 @@ public class PlayerMove : MonoBehaviour
             _animator.SetBool(_anim[Anim.run], false);
         }
         //ジャンプ
-        if (_onGround && Input.GetButtonDown("Jump"))
+        if (_onGround && Input.GetButton("Jump"))
         {
-            _rig.velocity += new Vector3(0, _jumpPower, 0);
+            _rig.velocity = new Vector3(_rig.velocity.x, _jumpPower, _rig.velocity.z);
             _onGround = false;
         }
         //射撃
@@ -130,12 +132,14 @@ public class PlayerMove : MonoBehaviour
             }
             else
             {
+                _cameraSpeed = 0.2f;
                 _canShootRailgun = true;
                 _animator.SetBool(_anim[Anim.aim], true);
             }
         }
         if (Input.GetButtonUp("Fire2"))
         {
+            _cameraSpeed = 1f;
             _animator.SetBool(_anim[Anim.aim], false);
             _canShootRailgun = false;
             Destroy(_anc);
@@ -218,17 +222,17 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            _rig.AddForce(transform.TransformDirection(_movePower) * _moveSpeed * 2, ForceMode.Acceleration);
+            _rig.AddForce(transform.TransformDirection(_movePower) * _moveSpeed * 3, ForceMode.Acceleration);
         }
 
         //重力を作る
         if (_rig.velocity.y < 1)
         {
-            _rig.AddForce(Vector3.down * 18f, ForceMode.Acceleration);
+            _rig.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
         }
         else
         {
-            _rig.AddForce(Vector3.down * 9.81f, ForceMode.Acceleration);
+            _rig.AddForce(Vector3.down * 9.81f * 1.5f, ForceMode.Acceleration);
         }
         //フックショットの動きを作る
         if (_usingAnc && _hitAnc)
@@ -242,12 +246,16 @@ public class PlayerMove : MonoBehaviour
                 {
                     _rig.velocity = vec * 10;
                 }
-                _anchorTimer = 5;
+                else
+                {
+                    _rig.velocity = _rig.velocity * 0.8f;
+                }
+                _anchorTimer = 10;
                 _onGround = false;
             }
             else
             {
-                _rig.AddForce(vec * 50f, ForceMode.Acceleration);
+                _rig.AddForce(vec * 60f, ForceMode.Acceleration);
             }
         }
     }
