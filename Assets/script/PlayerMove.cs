@@ -5,13 +5,13 @@ public class PlayerMove : MonoBehaviour
 {
     [SerializeField] float _moveSpeed = 1f;
     [SerializeField] float _jumpPower = 1f;
-    [SerializeField] float _hookEjectionForce = 1f;
     [SerializeField] float _shotInterval = 0.1f;
     [SerializeField] float _magazineCapacity = 15;
 
     float _shotIntervalTime = 0;
 
     [SerializeField] GameObject _bullet;
+    [SerializeField] GameObject _railgunBullet;
     [SerializeField] GameObject _anchor;
     [SerializeField] GameObject _fpsHand;
     [SerializeField] Animator _animator;
@@ -94,7 +94,9 @@ public class PlayerMove : MonoBehaviour
             {
                 if (_canShootRailgun)
                 {
+                    Instantiate(_railgunBullet);
                     _animator.SetBool(_anim[Anim.shootRailgun], true);
+                    _canShootRailgun = false;
                 }
             }
         }
@@ -222,7 +224,7 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            _rig.AddForce(transform.TransformDirection(_movePower) * _moveSpeed * 3, ForceMode.Acceleration);
+            _rig.AddForce(_moveSpeed * 3 * transform.TransformDirection(_movePower), ForceMode.Acceleration);
         }
 
         //重力を作る
@@ -232,7 +234,7 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            _rig.AddForce(Vector3.down * 9.81f * 1.5f, ForceMode.Acceleration);
+            _rig.AddForce(1.5f * 9.81f * Vector3.down, ForceMode.Acceleration);
         }
         //フックショットの動きを作る
         if (_usingAnc && _hitAnc)
@@ -248,7 +250,7 @@ public class PlayerMove : MonoBehaviour
                 }
                 else
                 {
-                    _rig.velocity = _rig.velocity * 0.8f;
+                    _rig.velocity *= 0.8f;
                 }
                 _anchorTimer = 10;
                 _onGround = false;
