@@ -7,6 +7,11 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] float _jumpPower = 1f;
     [SerializeField] float _shotInterval = 0.1f;
     [SerializeField] float _magazineCapacity = 15;
+    public bool _canPerspective = false;
+    public bool _canMove = false;
+    public bool _canJump = false;
+    public bool _canShot = false;
+    public bool _canDeformation = false;
 
     float _shotIntervalTime = 0;
 
@@ -51,26 +56,33 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
-        var hor = Input.GetAxisRaw("Horizontal");
-        var ver = Input.GetAxisRaw("Vertical");
-        transform.Rotate(0, Input.GetAxisRaw("Mouse X") * _cameraSpeed, 0);
-        var mouseY = Input.GetAxisRaw("Mouse Y");
-        _fpsHand.transform.Rotate(0, 0, mouseY * -1 * _cameraSpeed);
-        if (hor != 0 || ver != 0)
+        //éãì_ëÄçÏ
+        if (_canDeformation)
         {
-            _movePower = new Vector3(ver, 0, hor * -1);
-            if (_onGround)
+            transform.Rotate(0, Input.GetAxisRaw("Mouse X") * _cameraSpeed, 0);
+            var mouseY = Input.GetAxisRaw("Mouse Y");
+            _fpsHand.transform.Rotate(0, 0, mouseY * -1 * _cameraSpeed);
+        }
+        if (_canMove)
+        {
+            var hor = Input.GetAxisRaw("Horizontal");
+            var ver = Input.GetAxisRaw("Vertical");
+            if (hor != 0 || ver != 0)
             {
-                _animator.SetBool(_anim[Anim.run], true);
+                _movePower = new Vector3(hor, 0, ver);
+                if (_onGround)
+                {
+                    _animator.SetBool(_anim[Anim.run], true);
+                }
+                else
+                {
+                    _animator.SetBool(_anim[Anim.run], false);
+                }
             }
             else
             {
                 _animator.SetBool(_anim[Anim.run], false);
             }
-        }
-        else
-        {
-            _animator.SetBool(_anim[Anim.run], false);
         }
         //ÉWÉÉÉìÉv
         if (_onGround && Input.GetButton("Jump"))
@@ -87,6 +99,7 @@ public class PlayerMove : MonoBehaviour
                 {
                     Instantiate(_bullet);
                     _shotIntervalTime = _shotInterval;
+                    _rig.AddForce(transform.forward * -0.5f,ForceMode.Impulse);
                     _remainingBullets--;
                 }
             }
@@ -95,6 +108,7 @@ public class PlayerMove : MonoBehaviour
                 if (_canShootRailgun)
                 {
                     Instantiate(_railgunBullet);
+                    _rig.AddForce(transform.forward * -50f,ForceMode.Impulse);
                     _animator.SetBool(_anim[Anim.shootRailgun], true);
                     _canShootRailgun = false;
                 }
