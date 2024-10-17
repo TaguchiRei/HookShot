@@ -7,9 +7,10 @@ public class GameManager : MonoBehaviour
 {
     [HideInInspector] public static GameManager Instance = default;
     GameObject _player;
-    [SerializeField] GameObject _hpUI;
-    [SerializeField] GameObject _EnergyUI;
+    GameObject _hpUI;
+    GameObject _EnergyUI;
     [SerializeField] GameObject _enemyTarget;
+
 
     private void Awake()
     {
@@ -26,6 +27,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        _hpUI = GameObject.FindGameObjectWithTag("HP");
+        _EnergyUI = GameObject.FindGameObjectWithTag("Energy");
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -35,8 +38,12 @@ public class GameManager : MonoBehaviour
         _player = GameObject.FindGameObjectWithTag("Player");
     }
 
-    public void ShotGun(float full, int bullet)
+    public void ShotGun(float full, float bullet)
     {
-        _EnergyUI.GetComponent<Image>().DOFillAmount((bullet / full), 0.1f);
+        _EnergyUI.GetComponent<Image>().DOFillAmount((bullet / full), 0.2f);
+    }
+    public void HpUpDown(float max, float now)
+    {
+        _hpUI.GetComponent<Image>().DOFillAmount(now / max, 0.2f);
     }
 }

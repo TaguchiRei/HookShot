@@ -31,7 +31,7 @@ public class PlayerMove : MonoBehaviour
     bool _usingAnc = false;
     bool _hitAnc = false;
     bool _boost = false;
-    int _remainingBullets = 15;
+    float _remainingBullets = 0;
     float _anchorTimer = 0;
     float _cameraSpeed = 1;
 
@@ -42,6 +42,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Start()
     {
+        _remainingBullets = _magazineCapacity;
         _manager = FindObjectOfType<GameManager>().gameObject;
         _onGround = true;
         _hitAnc = false;
@@ -101,9 +102,13 @@ public class PlayerMove : MonoBehaviour
                 {
                     Instantiate(_bullet);
                     _shotIntervalTime = _shotInterval;
-                    _rig.AddForce(transform.forward * -0.5f,ForceMode.Impulse);
+                    _rig.AddForce(transform.forward * -0.5f, ForceMode.Impulse);
                     _remainingBullets--;
-                    _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity,_remainingBullets);
+                    _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity, _remainingBullets);
+                }
+                else if (_remainingBullets == 0)
+                {
+                    _animator.SetBool(_anim[Anim.reload], true);
                 }
             }
             else
@@ -111,18 +116,17 @@ public class PlayerMove : MonoBehaviour
                 if (_canShootRailgun)
                 {
                     Instantiate(_railgunBullet);
-                    _rig.AddForce(transform.forward * -50f,ForceMode.Impulse);
+                    _rig.AddForce((transform.forward * 2 + (_fpsHand.transform.right * -2)) * -100, ForceMode.Impulse);
                     _animator.SetBool(_anim[Anim.shootRailgun], true);
                     _canShootRailgun = false;
                 }
             }
         }
-        if (_remainingBullets == 0)
+        if (Input.GetKeyDown(KeyCode.R) && _remainingBullets != _magazineCapacity)
         {
-            if (Input.GetButtonDown("Fire1") || Input.GetKeyDown(KeyCode.R))
-            {
-                _animator.SetBool(_anim[Anim.reload], true);
-            }
+            _remainingBullets = 0;
+            _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity, _remainingBullets);
+            _animator.SetBool(_anim[Anim.reload], true);
         }
 
         if (_shotIntervalTime > 0)
@@ -200,9 +204,9 @@ public class PlayerMove : MonoBehaviour
     /// </summary>
     public void Reload()
     {
-        _remainingBullets = 15;
+        _remainingBullets = _magazineCapacity;
         _animator.SetBool(_anim[Anim.reload], false);
-        _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity,_remainingBullets);
+        _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity, _remainingBullets);
     }
 
     /// <summary>
