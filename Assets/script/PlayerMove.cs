@@ -25,6 +25,7 @@ public class PlayerMove : MonoBehaviour
     Vector3 _movePower = Vector3.zero;
     Vector3 _hitPos = Vector3.zero;
     GameObject _anc;
+    GameObject _manager;
     Dictionary<Anim, string> _anim = new();
     bool _onGround = true;
     bool _usingAnc = false;
@@ -41,6 +42,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Start()
     {
+        _manager = FindObjectOfType<GameManager>().gameObject;
         _onGround = true;
         _hitAnc = false;
         _usingAnc = false;
@@ -101,6 +103,7 @@ public class PlayerMove : MonoBehaviour
                     _shotIntervalTime = _shotInterval;
                     _rig.AddForce(transform.forward * -0.5f,ForceMode.Impulse);
                     _remainingBullets--;
+                    _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity,_remainingBullets);
                 }
             }
             else
@@ -199,6 +202,7 @@ public class PlayerMove : MonoBehaviour
     {
         _remainingBullets = 15;
         _animator.SetBool(_anim[Anim.reload], false);
+        _manager.GetComponent<GameManager>().ShotGun(_magazineCapacity,_remainingBullets);
     }
 
     /// <summary>

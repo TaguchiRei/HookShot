@@ -1,13 +1,14 @@
-using Unity.VisualScripting;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [HideInInspector]public static GameManager Instance = default;
+    [HideInInspector] public static GameManager Instance = default;
     GameObject _player;
-    [SerializeField]GameObject _hpUI;
-    [SerializeField]GameObject _EnergyUI;
+    [SerializeField] GameObject _hpUI;
+    [SerializeField] GameObject _EnergyUI;
     [SerializeField] GameObject _enemyTarget;
 
     private void Awake()
@@ -32,5 +33,10 @@ public class GameManager : MonoBehaviour
     void OnSceneLoaded(Scene s, LoadSceneMode mode)
     {
         _player = GameObject.FindGameObjectWithTag("Player");
+    }
+
+    public void ShotGun(float full, int bullet)
+    {
+        _EnergyUI.GetComponent<Image>().DOFillAmount((bullet / full), 0.1f);
     }
 }
