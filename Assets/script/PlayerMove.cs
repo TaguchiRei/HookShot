@@ -59,7 +59,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Update()
     {
-        //‹“_‘€ì
+        //ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½ï¿½
         if (_canDeformation)
         {
             transform.Rotate(0, Input.GetAxisRaw("Mouse X") * _cameraSpeed, 0);
@@ -87,13 +87,13 @@ public class PlayerMove : MonoBehaviour
                 _animator.SetBool(_anim[Anim.run], false);
             }
         }
-        //ƒWƒƒƒ“ƒv
+        //ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½v
         if (_onGround && Input.GetButton("Jump"))
         {
-            _rig.velocity = new Vector3(_rig.velocity.x, _jumpPower, _rig.velocity.z);
+            _rig.linearVelocity = new Vector3(_rig.linearVelocity.x, _jumpPower, _rig.linearVelocity.z);
             _onGround = false;
         }
-        //ËŒ‚
+        //ï¿½ËŒï¿½
         if (Input.GetButton("Fire1"))
         {
             if (_gunMode)
@@ -133,14 +133,14 @@ public class PlayerMove : MonoBehaviour
         {
             _shotIntervalTime -= Time.deltaTime;
         }
-        //•ÏŒ`
+        //ï¿½ÏŒ`
         if (Input.GetKeyDown(KeyCode.C))
         {
             _animator.SetBool(_anim[Anim.railgun], true);
             _gunMode = false;
 
         }
-        //ƒtƒbƒNƒVƒ‡ƒbƒgËŒ‚‚ÆƒŒ[ƒ‹ƒKƒ“\‚¦
+        //ï¿½tï¿½bï¿½Nï¿½Vï¿½ï¿½ï¿½bï¿½gï¿½ËŒï¿½ï¿½Æƒï¿½ï¿½[ï¿½ï¿½ï¿½Kï¿½ï¿½ï¿½\ï¿½ï¿½
         if (Input.GetButtonDown("Fire2"))
         {
             if (_gunMode)
@@ -150,7 +150,7 @@ public class PlayerMove : MonoBehaviour
                     _animator.SetBool(_anim[Anim.hookShot], true);
                     _anc = Instantiate(_anchor);
                     _usingAnc = true;
-                    _anc.GetComponent<Rigidbody>().velocity = _rig.velocity / 4;
+                    _anc.GetComponent<Rigidbody>().linearVelocity = _rig.linearVelocity / 4;
                 }
             }
             else
@@ -175,7 +175,7 @@ public class PlayerMove : MonoBehaviour
                 NotHitAnchor();
             }
         }
-        //ƒAƒ“ƒJ[‚ğŠO‚·‚½‚ß‚Ìƒ^ƒCƒ}[
+        //ï¿½Aï¿½ï¿½ï¿½Jï¿½[ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½ï¿½ï¿½ß‚Ìƒ^ï¿½Cï¿½}ï¿½[
         if (_anchorTimer > 0)
         {
             _anchorTimer -= Time.deltaTime;
@@ -186,7 +186,7 @@ public class PlayerMove : MonoBehaviour
                 NotHitAnchor();
             }
         }
-        //Ú’n”»’è
+        //ï¿½Ú’nï¿½ï¿½ï¿½ï¿½
         var line = Physics.Raycast(transform.position, Vector3.down, 1.5f);
         if (line && !_hitAnc)
         {
@@ -200,7 +200,7 @@ public class PlayerMove : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒŠƒ[ƒh‚ªŠ®—¹‚µ‚½‚Æ‚«‚Ìˆ—
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
     public void Reload()
     {
@@ -210,9 +210,9 @@ public class PlayerMove : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒ“ƒJ[‚ª“–‚½‚Á‚½‚Ìˆ—
+    /// ï¿½Aï¿½ï¿½ï¿½Jï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="pos">ƒAƒ“ƒJ[‚ª“–‚½‚Á‚½êŠ</param>
+    /// <param name="pos">ï¿½Aï¿½ï¿½ï¿½Jï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½êŠ</param>
     public void HitAnchor(Vector3 pos)
     {
         _hitPos = pos;
@@ -220,7 +220,7 @@ public class PlayerMove : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒ“ƒJ[‚ª“–‚½‚ç‚È‚©‚Á‚½‚Æ‚«A‚Ü‚½‚ÍƒAƒ“ƒJ[‚ğŠO‚·‚Æ‚«‚Ìˆ—
+    /// ï¿½Aï¿½ï¿½ï¿½Jï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Aï¿½Ü‚ï¿½ï¿½ÍƒAï¿½ï¿½ï¿½Jï¿½[ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ìï¿½ï¿½ï¿½
     /// </summary>
     public void NotHitAnchor()
     {
@@ -241,7 +241,7 @@ public class PlayerMove : MonoBehaviour
             {
                 pMove *= 2f;
             }
-            _rig.velocity = new Vector3(pMove.x, _rig.velocity.y, pMove.z);
+            _rig.linearVelocity = new Vector3(pMove.x, _rig.linearVelocity.y, pMove.z);
             _movePower = Vector3.zero;
         }
         else
@@ -249,8 +249,8 @@ public class PlayerMove : MonoBehaviour
             _rig.AddForce(_moveSpeed * 3 * transform.TransformDirection(_movePower), ForceMode.Acceleration);
         }
 
-        //d—Í‚ğì‚é
-        if (_rig.velocity.y < 1)
+        //ï¿½dï¿½Í‚ï¿½ï¿½ï¿½ï¿½
+        if (_rig.linearVelocity.y < 1)
         {
             _rig.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
         }
@@ -258,7 +258,7 @@ public class PlayerMove : MonoBehaviour
         {
             _rig.AddForce(1.5f * 9.81f * Vector3.down, ForceMode.Acceleration);
         }
-        //ƒtƒbƒNƒVƒ‡ƒbƒg‚Ì“®‚«‚ğì‚é
+        //ï¿½tï¿½bï¿½Nï¿½Vï¿½ï¿½ï¿½bï¿½gï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (_usingAnc && _hitAnc)
         {
             Vector3 vec = _hitPos - transform.position;
@@ -268,11 +268,11 @@ public class PlayerMove : MonoBehaviour
                 _boost = true;
                 if (Input.GetKey(KeyCode.LeftShift))
                 {
-                    _rig.velocity = vec * 10;
+                    _rig.linearVelocity = vec * 10;
                 }
                 else
                 {
-                    _rig.velocity *= 0.8f;
+                    _rig.linearVelocity *= 0.8f;
                 }
                 _anchorTimer = 10;
                 _onGround = false;
@@ -285,7 +285,7 @@ public class PlayerMove : MonoBehaviour
     }
 
     /// <summary>
-    /// ƒAƒjƒ[ƒVƒ‡ƒ“‚ğŠÇ—‚·‚é‚½‚ß‚Ì•Ï”‚ğ©“®“ü—Í‚Å‚Å‚«‚é‚æ‚¤‚Éenum‚ğg—p
+    /// ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç—ï¿½ï¿½ï¿½ï¿½é‚½ï¿½ß‚Ì•Ïï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í‚Å‚Å‚ï¿½ï¿½ï¿½æ‚¤ï¿½ï¿½enumï¿½ï¿½ï¿½gï¿½p
     /// </summary>
     enum Anim
     {

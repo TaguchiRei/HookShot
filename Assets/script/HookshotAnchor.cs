@@ -15,7 +15,7 @@ public class HookshotAnchor : MonoBehaviour
         _player = GameObject.Find("Player");
         _muzzle = GameObject.Find("AnchorMuzzle");
         transform.SetPositionAndRotation(_muzzle.transform.position, _muzzle.transform.rotation);
-        _rig.velocity += transform.forward * 150f;
+        _rig.linearVelocity += transform.forward * 150f;
         timer = 0;
         _lineRenderer.material = _ropeMaterial;
     }
@@ -32,7 +32,7 @@ public class HookshotAnchor : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         _player.GetComponent <PlayerMove>().HitAnchor(transform.position);
-        _rig.velocity = Vector3.zero;
+        _rig.linearVelocity = Vector3.zero;
         hit = true;
     }
 }

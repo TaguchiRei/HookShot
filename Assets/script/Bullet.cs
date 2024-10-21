@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour
     {
         _muzzle = GameObject.Find("muzzle");
         transform.SetPositionAndRotation(_muzzle.transform.position, _muzzle.transform.rotation);
-        _rb.velocity = transform.forward * bulletSpeed;
+        _rb.linearVelocity = transform.forward * bulletSpeed;
         timer = 5;
     }
 
